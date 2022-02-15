@@ -15,8 +15,11 @@
 
 #include "ReactESP.h"
 #include "SensESP.h"
-#include "sensors/digital_input.h"
-#include "system/lambda_consumer.h"
+#include "sensesp/sensors/digital_input.h"
+#include "sensesp/system/lambda_consumer.h"
+#include "sensesp/system/startable.h"
+
+using namespace sensesp;
 
 #define SDA_TEST_PIN 14
 #define SCL_TEST_PIN 12
@@ -71,7 +74,9 @@ bool assert_int_almost_equal(int actual, int expected, int tol, String name) {
   }
 }
 
-ReactESP app([]() {
+ReactESP app;
+
+void setup() {
   // setup serial output
   Serial.begin(115200);
   delay(100);
@@ -214,5 +219,9 @@ ReactESP app([]() {
   });
 
   // enable all object that need enabling
-  Enable::enable_all();
-});
+  Startable::start_all();
+}
+
+void loop() {
+  app.tick();
+}
