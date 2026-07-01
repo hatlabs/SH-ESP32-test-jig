@@ -33,9 +33,17 @@ function sync-drive {
 
   echo "Syncing flashing bundle to:"
   echo "  $DRIVE_DEST"
-  mkdir -p "$DRIVE_DEST/firmware"
-  rsync -a --delete firmware/ "$DRIVE_DEST/firmware/"
-  rsync -a autoflash.sh flash.command README.md "$DRIVE_DEST/"
+  mkdir -p "$DRIVE_DEST"
+  # Clean mirror: ship only the frozen images and scripts, and purge anything
+  # else already on the drive (e.g. a stale .pio build tree). Binaries are
+  # distributed via firmware/, never .pio.
+  rsync -a --delete --delete-excluded \
+    --include='/firmware/***' \
+    --include='/autoflash.sh' \
+    --include='/flash.command' \
+    --include='/README.md' \
+    --exclude='*' \
+    ./ "$DRIVE_DEST/"
   echo "Sync complete."
 }
 
