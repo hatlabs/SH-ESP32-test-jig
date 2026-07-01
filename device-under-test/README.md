@@ -1,17 +1,23 @@
 # SH-ESP32 test jig DUT flashing
 
 Flashes the frozen SH-ESP32 test-jig DUT firmware onto ESP32 devices, one after
-another, for end-of-line testing. The binary in `firmware/` is fixed and is
+another, for end-of-line testing. The binaries in `firmware/` are fixed and are
 **never rebuilt** — every device gets identical bytes regardless of the toolchain
 on this machine.
 
 ## One-time setup
 
-Install an up-to-date esptool:
+`autoflash.sh` flashes with the esptool that ships inside PlatformIO's core
+packages (`~/.platformio`), so no separately installed esptool is needed. With
+PlatformIO Core installed, fetch just the esptool package globally — no project
+checkout required:
 
 ```bash
-brew install esptool      # or: pipx install esptool
+pio pkg install -g -t platformio/tool-esptoolpy
 ```
+
+Set `PLATFORMIO_CORE_DIR` if PlatformIO's core lives somewhere other than
+`~/.platformio`.
 
 ## Flashing
 
@@ -27,9 +33,9 @@ Press Ctrl-C to stop.
 
 ## Contents
 
-| File | Purpose |
+| Path | Purpose |
 |------|---------|
-| `autoflash.sh` | Flash loop (calls `esptool write-flash`) |
+| `autoflash.sh` | Flash loop (drives PlatformIO's esptool) |
 | `flash.command` | Double-click launcher for `autoflash.sh` |
 | `firmware/` | Frozen flash images: bootloader, partitions, boot_app0, firmware |
 
