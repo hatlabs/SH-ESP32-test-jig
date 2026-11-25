@@ -51,11 +51,10 @@ fi
 # that rate ("The chip stopped responding"); 921600 works.
 FLASH_BAUD=921600
 
-SERIAL_DEV=$(ls /dev/tty.usbserial-* | head -n 1)
-
 while true; do
     echo "Insert device."
-    if [ -c $SERIAL_DEV ]; then
+    SERIAL_DEV=$(ls /dev/tty.usbserial-* 2>/dev/null | head -n 1 || true)
+    if [ -n "$SERIAL_DEV" ] && [ -c "$SERIAL_DEV" ]; then
         "$PYEXE" "$ESPTOOL" --chip esp32 --port "$SERIAL_DEV" --baud "$FLASH_BAUD" \
             write_flash --compress --flash_size detect \
             0x1000 "$FW/bootloader.bin" \
@@ -64,7 +63,7 @@ while true; do
             0x10000 "$FW/firmware.bin"
         echo "Done. Remove device."
         echo -e '\a'
-        while [ -c $SERIAL_DEV ] ; do
+        while [ -c "$SERIAL_DEV" ] ; do
             sleep 1
         done
     fi
