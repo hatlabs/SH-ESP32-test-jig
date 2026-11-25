@@ -47,12 +47,16 @@ if [ -z "$PYEXE" ]; then
     exit 1
 fi
 
+# At 2000000 baud the board stops answering once esptool 5.1.0 switches to
+# that rate ("The chip stopped responding"); 921600 works.
+FLASH_BAUD=921600
+
 SERIAL_DEV=$(ls /dev/tty.usbserial-* | head -n 1)
 
 while true; do
     echo "Insert device."
     if [ -c $SERIAL_DEV ]; then
-        "$PYEXE" "$ESPTOOL" --chip esp32 --port "$SERIAL_DEV" --baud 2000000 \
+        "$PYEXE" "$ESPTOOL" --chip esp32 --port "$SERIAL_DEV" --baud "$FLASH_BAUD" \
             write_flash --compress --flash_size detect \
             0x1000 "$FW/bootloader.bin" \
             0x8000 "$FW/partitions.bin" \
